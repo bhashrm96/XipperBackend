@@ -19,16 +19,20 @@ exports.webCheckIn = async (req, res) => {
 
         // Check for duplicate Aadhaar numbers
         for (const member of familyMembers) {
-            const existingMember = await prisma.familyMember.findUnique({
-                where: { aadhaar: member.aadhaar }
+            const existingMember = await prisma.familyMember.findFirst({
+                where: {
+                    aadhaar: member.aadhaar,
+                    bookingId: bookingId // Ensures we only check within the same booking
+                }
             });
-
+        
             if (existingMember) {
                 return res.status(400).json({
-                    error: `Aadhaar number ${member.aadhaar} is already registered!`
+                    error: `Aadhaar number ${member.aadhaar} is already registered for this booking!`
                 });
             }
         }
+        
 
         // Insert family members' check-in details
         const familyData = familyMembers.map(member => ({

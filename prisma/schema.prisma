@@ -35,11 +35,12 @@ model Booking {
   family      FamilyMember[]
 }
 
-
 model FamilyMember {
   id        Int    @id @default(autoincrement())
   name      String
-  aadhaar   String @unique
+  aadhaar   String
   bookingId Int
   booking   Booking @relation(fields: [bookingId], references: [id])
+
+  @@unique([aadhaar, bookingId])  // Ensures Aadhaar is unique per booking
 }
